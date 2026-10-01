@@ -76,3 +76,26 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   };
   box.innerHTML='<span class="language-label">'+labels[lang]+'</span>'+['en','pt','es','fr'].map(function(x){return x===lang?'<span class="language-current" aria-current="page">'+x.toUpperCase()+'</span>':'<a href="'+urls[x]+'" hreflang="'+x+'">'+x.toUpperCase()+'</a>';}).join('');
 })();
+
+
+/* Multilingual footer and cookie text safeguard */
+(function(){
+  const lang=(document.documentElement.lang||'en').slice(0,2);
+  const t={
+    pt:{legal:'A Hub Carbon Limited é uma empresa registada em Inglaterra e no País de Gales com o número de registo 15657271',office:'e tem a sua sede registada em 71–75 Sheldon Street, London WC2H 9JQ, Reino Unido.',rights:'© 2026 Hub Carbon. Todos os direitos reservados.',privacy:'Privacidade e cookies',settings:'Configurações de cookies'},
+    es:{legal:'Hub Carbon Limited es una empresa registrada en Inglaterra y Gales con el número de registro 15657271',office:'y su domicilio social está en 71–75 Sheldon Street, London WC2H 9JQ, Reino Unido.',rights:'© 2026 Hub Carbon. Todos los derechos reservados.',privacy:'Privacidad y cookies',settings:'Configuración de cookies'},
+    fr:{legal:'Hub Carbon Limited est une société enregistrée en Angleterre et au Pays de Galles sous le numéro 15657271',office:'et son siège social est situé au 71–75 Sheldon Street, London WC2H 9JQ, Royaume-Uni.',rights:'© 2026 Hub Carbon. Tous droits réservés.',privacy:'Confidentialité et cookies',settings:'Paramètres des cookies'}
+  }[lang];
+  if(!t)return;
+  const replace=(root,from,to)=>{if(!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];while(w.nextNode())nodes.push(w.currentNode);nodes.forEach(n=>{if(n.nodeValue.includes(from))n.nodeValue=n.nodeValue.split(from).join(to);});};
+  document.addEventListener('DOMContentLoaded',()=>{
+    replace(document.body,'Hub Carbon Limited is a company registered in England and Wales with registered number 15657271',t.legal);
+    replace(document.body,'and its registered office at 71–75 Sheldon Street, London WC2H 9JQ, United Kingdom.',t.office);
+    replace(document.body,'© 2026 Hub Carbon. All rights reserved.',t.rights);
+    replace(document.body,'Privacy & cookies',t.privacy);
+    replace(document.body,'Privacy &amp; cookies',t.privacy);
+    replace(document.body,'Read our Privacy & Cookies notice',lang==='pt'?'Leia o nosso aviso de Privacidade e Cookies':lang==='es'?'Lea nuestro aviso de Privacidad y Cookies':'Lire notre avis Confidentialité et Cookies');
+    replace(document.body,'Read our Privacy &amp; Cookies notice',lang==='pt'?'Leia o nosso aviso de Privacidade e Cookies':lang==='es'?'Lea nuestro aviso de Privacidad y Cookies':'Lire notre avis Confidentialité et Cookies');
+    replace(document.body,'Choose how Hub Carbon may use storage and access technologies. Your choice is remembered on this device and can be changed at any time.',lang==='pt'?'Escolha como a Hub Carbon pode utilizar tecnologias de armazenamento e acesso. A sua escolha fica guardada neste dispositivo e pode ser alterada a qualquer momento.':lang==='es'?'Elija cómo puede utilizar Hub Carbon las tecnologías de almacenamiento y acceso. Su elección se recuerda en este dispositivo y puede cambiarse en cualquier momento.':'Choisissez comment Hub Carbon peut utiliser les technologies de stockage et d’accès. Votre choix est mémorisé sur cet appareil et peut être modifié à tout moment.');
+  });
+})();
