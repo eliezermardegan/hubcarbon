@@ -4,7 +4,7 @@ if(menuButton && nav){
   menuButton.addEventListener('click',()=>{
     const open=nav.classList.toggle('open');
     menuButton.setAttribute('aria-expanded',String(open));
-    menuButton.textContent=open?'Close':'Menu';
+    const ml={en:{o:'Close',c:'Menu'},pt:{o:'Fechar',c:'Menu'},es:{o:'Cerrar',c:'Menú'},fr:{o:'Fermer',c:'Menu'}};const l=(document.documentElement.lang||'en').slice(0,2);menuButton.textContent=open?(ml[l]?.o||'Close'):(ml[l]?.c||'Menu');
   });
 }
 
