@@ -105,3 +105,14 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     replace(document.body,'Close cookie settings',lang==='pt'?'Fechar configurações de cookies':lang==='es'?'Cerrar configuración de cookies':'Fermer les paramètres des cookies');
   });
 })();
+
+
+/* Footer language policy: legal footer stays in English */
+(function(){
+  const applyEnglishFooter=()=>document.querySelectorAll('.footer-legal').forEach(el=>{
+    const cols=el.querySelectorAll(':scope > div');
+    if(cols[0]) cols[0].innerHTML='Hub Carbon Limited is a company registered in England and Wales with registered number 15657271<br>and its registered office at 71–75 Sheldon Street, London WC2H 9JQ, United Kingdom.';
+    if(cols[1]) cols[1].textContent='© 2026 Hub Carbon. All rights reserved.';
+  });
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',applyEnglishFooter); else applyEnglishFooter();
+})();
