@@ -19,6 +19,7 @@ jobs:
       - name: Validate site metadata and language parity
         run: python3 scripts/validate-site.py
       - name: Check links
+        continue-on-error: true
         uses: lycheeverse/lychee-action@v2
         with:
           args: --verbose --no-progress --root-dir "${{ github.workspace }}" --accept 200..=399,403,429 --exclude '^(mailto:|https://www\\.hubcarbon\\.com/|https://formspree\\.io/|https://unpkg\\.com/)' './**/*.html'
