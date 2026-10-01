@@ -63,6 +63,25 @@ for stem, present in stems.items():
     if present != set(LANGS):
         fail(stem, "language parity incomplete: " + ",".join(sorted(present)))
 
+# Validate relative internal links and local assets without needing a browser.
+for path in pages:
+    text = path.read_text(encoding="utf-8")
+    rel = path.relative_to(ROOT).as_posix()
+    for attr in ("href", "src"):
+        for target in re.findall(r'\\b'+attr+r'="([^"]+)"', text, re.I):
+            if target.startswith(("#", "mailto:", "tel:", "javascript:", "data:")):
+                continue
+            if re.match(r"^[a-z][a-z0-9+.-]*:", target, re.I):
+                continue
+            clean = target.split("#", 1)[0].split("?", 1)[0]
+            if not clean:
+                continue
+            candidate = (ROOT / clean.lstrip("/")) if clean.startswith("/") else (path.parent / clean)
+            if candidate.is_dir():
+                candidate = candidate / "index.html"
+            if not candidate.exists():
+                fail(rel, f"broken local {attr}: {target}")
+
 if errors:
     print("\n".join(errors))
     sys.exit(1)
