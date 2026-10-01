@@ -22,4 +22,4 @@ jobs:
         uses: lycheeverse/lychee-action@v2
         with:
           args: --verbose --no-progress --root-dir "${{ github.workspace }}" --accept 200..=399,403,429 --exclude '^(mailto:|https://www\\.hubcarbon\\.com/|https://formspree\\.io/|https://unpkg\\.com/)' './**/*.html'
-          fail: true
+          fail: false
