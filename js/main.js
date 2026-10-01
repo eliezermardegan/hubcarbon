@@ -58,3 +58,21 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 })();
+
+
+/* V10.1 language selector normalization */
+(function(){
+  const box=document.querySelector('.language-switcher');
+  if(!box) return;
+  const path=window.location.pathname;
+  const lang=path.startsWith('/pt/')?'pt':path.startsWith('/es/')?'es':path.startsWith('/fr/')?'fr':'en';
+  const labels={en:'LANGUAGE',pt:'IDIOMA',es:'IDIOMA',fr:'LANGUE'};
+  const base=path.includes('/pages/')?'pages/':'';
+  const urls={
+    en:base?'../pages/'+path.split('/pages/')[1]:'/',
+    pt:base?'/pt/pages/'+path.split('/pages/')[1]:'/pt/',
+    es:base?'/es/pages/'+path.split('/pages/')[1]:'/es/',
+    fr:base?'/fr/pages/'+path.split('/pages/')[1]:'/fr/'
+  };
+  box.innerHTML='<span class="language-label">'+labels[lang]+'</span>'+['en','pt','es','fr'].map(function(x){return x===lang?'<span class="language-current" aria-current="page">'+x.toUpperCase()+'</span>':'<a href="'+urls[x]+'" hreflang="'+x+'">'+x.toUpperCase()+'</a>';}).join('');
+})();
