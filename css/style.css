@@ -126,3 +126,11 @@ body.cookie-modal-open{overflow:hidden}
 @media(max-width:520px){.cookie-actions{display:grid;grid-template-columns:1fr 1fr}.cookie-button:first-child{grid-column:1/-1}.cookie-dialog-foot{display:grid;grid-template-columns:1fr}.cookie-dialog-head h2{font-size:25px}}
 
 .footer-cookie-link{border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer}.footer-cookie-link:hover{color:var(--green)}.policy-date{margin-top:38px;font-size:13px!important;color:var(--muted)!important}
+
+/* Accessibility baseline */
+:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+button,input,select,textarea{font:inherit}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
