@@ -71,7 +71,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     {code:'pt',name:'Português'}
   ];
   const ui={
-    en:{kicker:'LANGUAGE',title:'Select your language',search:'Type a language',note:'Hub Carbon is a global platform. Choose the language you prefer for this site.'},
+    en:{kicker:'LANGUAGE',title:'Select your language',search:'Type a language',note:'Choose the language you prefer for this site.'},
     es:{kicker:'IDIOMA',title:'Selecciona tu idioma',search:'Buscar idioma',note:'Hub Carbon es una plataforma global. Elige el idioma que prefieras para este sitio.'},
     fr:{kicker:'LANGUE',title:'Choisissez votre langue',search:'Rechercher une langue',note:'Hub Carbon est une plateforme mondiale. Choisissez la langue que vous préférez pour ce site.'},
     pt:{kicker:'IDIOMA',title:'Selecione o seu idioma',search:'Pesquisar idioma',note:'A Hub Carbon é uma plataforma global. Escolha o idioma que prefere para este site.'}
