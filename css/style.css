@@ -164,3 +164,5 @@ body.language-drawer-open{overflow:hidden}
  .language-drawer-search{margin-top:22px}
  .language-option{padding:15px 2px}
 }
+
+.language-drawer-brand{width:46px;height:46px;color:var(--green);margin-bottom:20px;display:grid;place-items:center}.language-drawer-brand svg{width:46px;height:46px}
