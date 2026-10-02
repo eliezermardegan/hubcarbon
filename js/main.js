@@ -65,10 +65,10 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   const rootLang=(document.documentElement.lang||'en').slice(0,2);
   const path=window.location.pathname;
   const languages=[
-    {code:'en',name:'English',scope:'Global'},
-    {code:'es',name:'Español',scope:'Global'},
-    {code:'fr',name:'Français',scope:'Global'},
-    {code:'pt',name:'Português',scope:'Global'}
+    {code:'en',name:'English'},
+    {code:'es',name:'Español'},
+    {code:'fr',name:'Français'},
+    {code:'pt',name:'Português'}
   ];
   const ui={
     en:{kicker:'LANGUAGE',title:'Select your language',search:'Type a language',note:'Hub Carbon is a global platform. Choose the language you prefer for this site.'},
@@ -112,7 +112,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   };
   const render=(filter='')=>{
     const q=filter.trim().toLowerCase();
-    options.innerHTML=languages.filter(l=>!q || l.name.toLowerCase().includes(q) || l.code.includes(q) || l.scope.toLowerCase().includes(q)).map(l=>'<button type="button" class="language-option '+(l.code===rootLang?'is-current':'')+'" data-language="'+l.code+'"><span><strong>'+l.scope+' — '+l.name+'</strong></span><span class="language-check" aria-hidden="true">✓</span></button>').join('');
+    options.innerHTML=languages.filter(l=>!q || l.name.toLowerCase().includes(q) || l.code.includes(q) || l.name.toLowerCase().includes(q)).map(l=>'<button type="button" class="language-option '+(l.code===rootLang?'is-current':'')+'" data-language="'+l.code+'"><span><strong>'+l.name+'</strong></span><span class="language-check" aria-hidden="true">✓</span></button>').join('');
     options.querySelectorAll('[data-language]').forEach(btn=>btn.addEventListener('click',()=>{const code=btn.dataset.language;if(code!==rootLang)window.location.href=urlFor(code);else closeDrawer();}));
   };
   const openDrawer=()=>{drawer.hidden=false;document.body.classList.add('language-drawer-open');box.setAttribute('aria-expanded','true');render();requestAnimationFrame(()=>input?.focus());};
