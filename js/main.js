@@ -105,8 +105,8 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   const input=drawer.querySelector('input');
   const close=drawer.querySelector('.language-drawer-close');
   const urlFor=(code)=>{
-    const normalized=path.replace(/\\/+$/,'')||'/';
-    const pageMatch=normalized.match(/\\/(?:pt|es|fr)\\/pages\\/([^/]+)$/) || normalized.match(/\\/pages\\/([^/]+)$/);
+    const normalized=path.replace(/\/+$/,'')||'/';
+    const pageMatch=normalized.match(/\/(?:pt|es|fr)\/pages\/([^/]+)$/) || normalized.match(/\/pages\/([^/]+)$/);
     if(pageMatch)return code==='en'?'/pages/'+pageMatch[1]:'/'+code+'/pages/'+pageMatch[1];
     return code==='en'?'/':'/'+code+'/';
   };
