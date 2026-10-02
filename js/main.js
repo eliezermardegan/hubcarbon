@@ -74,7 +74,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     es:base?'/es/pages/'+path.split('/pages/')[1]:'/es/',
     fr:base?'/fr/pages/'+path.split('/pages/')[1]:'/fr/'
   };
-  box.innerHTML='<span class="language-label">'+labels[lang]+'</span>'+['en','pt','es','fr'].map(function(x){return x===lang?'<span class="language-current" aria-current="page">'+x.toUpperCase()+'</span>':'<a href="'+urls[x]+'" hreflang="'+x+'">'+x.toUpperCase()+'</a>';}).join('');
+  box.innerHTML='<span class="language-label">'+labels[lang]+'</span>'+['en','es','fr','pt'].map(function(x){return x===lang?'<span class="language-current" aria-current="page">'+x.toUpperCase()+'</span>':'<a href="'+urls[x]+'" hreflang="'+x+'">'+x.toUpperCase()+'</a>';}).join('');
 })();
 
 
