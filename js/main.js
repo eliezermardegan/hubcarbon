@@ -9,28 +9,35 @@ if(menuButton && nav){
     fr:{menu:'Menu',hubs:'Hubs',ecosystem:'Écosystème',infrastructure:'Infrastructure',about:'À propos',talk:'Parlons-nous',close:'Fermer le menu'}
   }[lang] || {menu:'Menu',hubs:'Hubs',ecosystem:'Ecosystem',infrastructure:'Infrastructure',about:'About',talk:'Talk to us',close:'Close menu'};
   menuButton.textContent=labels.menu;
+
   const links=nav.querySelectorAll('a');
-  if(links[0])links[0].textContent=labels.hubs;
-  if(links[1])links[1].textContent=labels.ecosystem;
-  if(links[2])links[2].textContent=labels.infrastructure;
-  if(links[3])links[3].textContent=labels.about;
-  if(links[4])links[4].textContent=labels.talk;
-  if(!nav.querySelector('.menu-drawer-head')){
-    const head=document.createElement('div');
-    head.className='menu-drawer-head';
-    head.innerHTML='<span class="menu-drawer-kicker">'+labels.menu.toUpperCase()+'</span><button type="button" class="menu-drawer-close" aria-label="'+labels.close+'">×</button>';
-    nav.prepend(head);
-    head.querySelector('.menu-drawer-close').addEventListener('click',()=>{
-      nav.classList.remove('open');
-      menuButton.setAttribute('aria-expanded','false');
-    });
-  }
-  menuButton.addEventListener('click',()=>{
-    const open=nav.classList.toggle('open');
-    menuButton.setAttribute('aria-expanded',String(open));
-    menuButton.textContent=labels.menu;
-    document.body.classList.toggle('menu-open',open);
+  const drawer=document.createElement('div');
+  drawer.className='menu-mobile-drawer';
+  drawer.hidden=true;
+  drawer.innerHTML='<div class="menu-mobile-panel" role="dialog" aria-modal="true" aria-label="'+labels.menu+'"><div class="menu-mobile-head"><div class="menu-mobile-kicker">'+labels.menu.toUpperCase()+'</div><button type="button" class="menu-mobile-close" aria-label="'+labels.close+'">×</button></div><div class="menu-mobile-options"></div></div>';
+  document.body.appendChild(drawer);
+
+  const options=drawer.querySelector('.menu-mobile-options');
+  links.forEach(link=>{
+    const a=document.createElement('a');
+    a.className='menu-mobile-option'+(link.classList.contains('nav-button')?' nav-button':'');
+    a.href=link.getAttribute('href')||'#';
+    const key=link.classList.contains('nav-button')?'talk':
+      (link.getAttribute('href')||'').includes('#hubs')?'hubs':
+      (link.getAttribute('href')||'').includes('#ecosystem')?'ecosystem':
+      (link.getAttribute('href')||'').includes('#infrastructure')?'infrastructure':'about';
+    a.textContent=labels[key];
+    options.appendChild(a);
+    a.addEventListener('click',()=>closeDrawer());
   });
+
+  const closeButton=drawer.querySelector('.menu-mobile-close');
+  const openDrawer=()=>{drawer.hidden=false;document.body.classList.add('menu-open');menuButton.setAttribute('aria-expanded','true');};
+  const closeDrawer=()=>{drawer.hidden=true;document.body.classList.remove('menu-open');menuButton.setAttribute('aria-expanded','false');};
+  menuButton.addEventListener('click',()=>{drawer.hidden?openDrawer():closeDrawer();});
+  closeButton.addEventListener('click',closeDrawer);
+  drawer.addEventListener('click',e=>{if(e.target===drawer)closeDrawer();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!drawer.hidden)closeDrawer();});
 }
 
 const observer=new IntersectionObserver(entries=>{
@@ -39,7 +46,7 @@ const observer=new IntersectionObserver(entries=>{
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener('click',()=>{
-    if(nav){nav.classList.remove('open');document.body.classList.remove('menu-open');if(menuButton){menuButton.setAttribute('aria-expanded','false');}}
+    if(nav){nav.classList.remove('open');}if(menuButton){menuButton.setAttribute('aria-expanded','false');}document.body.classList.remove('menu-open');
   });
 });
 
