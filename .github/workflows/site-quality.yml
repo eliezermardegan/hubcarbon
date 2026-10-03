@@ -1,0 +1,26 @@
+name: Site quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    name: Check HTML links
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Validate site metadata and language parity
+        run: python3 scripts/validate-site.py
+      - name: Check links
+        continue-on-error: true
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --verbose --no-progress --root-dir "${{ github.workspace }}" --accept 200..=399,403,429 --exclude '^(mailto:|https://www\\.hubcarbon\\.com/|https://formspree\\.io/|https://unpkg\\.com/)' './**/*.html'
+          fail: false
