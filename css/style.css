@@ -59,9 +59,9 @@ h2{font-size:clamp(38px,5.2vw,68px);line-height:1;letter-spacing:-.06em;font-wei
 .page-hero{background:var(--green);color:#fff;padding:110px 0 95px}.page-hero h1{font-size:clamp(50px,7vw,92px);line-height:.95;letter-spacing:-.07em;max-width:950px;margin:25px 0}.page-hero p{font-size:20px;color:#c2d1c8;max-width:700px}
 .prose{max-width:800px}.prose h2{font-size:42px;margin:0 0 18px}.prose p{font-size:17px;color:var(--muted);line-height:1.75}
 @media(max-width:900px){
- .nav{position:relative}.language-switcher{margin-left:auto;margin-right:10px}.language-label{display:none}.language-switcher a,.language-switcher .language-current{min-width:31px;padding:7px 6px}
+ .nav{position:relative}.language-switcher{margin-left:0;margin-right:0}.language-label{display:none}.language-switcher a,.language-switcher .language-current{min-width:31px;padding:7px 6px}
  .site-nav{display:none}
- .menu-toggle{display:block;position:absolute;left:50%;transform:translateX(-50%);min-width:104px;padding:10px 16px;font-size:17px;font-weight:700;letter-spacing:-.02em;text-align:center}
+ .menu-toggle{display:block;position:static;left:auto;transform:none;min-width:104px;margin-left:auto;margin-right:8px;padding:10px 16px;font-size:17px;font-weight:700;letter-spacing:-.02em;text-align:center}
  .menu-mobile-drawer[hidden]{display:none}
  .menu-mobile-drawer{position:fixed !important;inset:0 !important;z-index:2147483647 !important;background:transparent !important;isolation:isolate !important;pointer-events:auto !important}
  .menu-mobile-drawer::before{content:'';position:absolute;inset:0;background:rgba(6,20,16,.58);backdrop-filter:blur(5px);z-index:0;pointer-events:auto}
@@ -171,7 +171,7 @@ button,input,select,textarea{font:inherit}
 .language-option:hover{background:rgba(11,61,46,.05);padding-left:10px;padding-right:10px}
 .language-option strong{font-size:14px;font-weight:600}.language-option span{font-size:13px;color:var(--muted)}
 .language-option .language-check{font-size:18px;color:var(--green);opacity:0}.language-option.is-current .language-check{opacity:1}
-.language-drawer-note{margin-top:auto;padding-top:16px;font-size:11px;color:var(--muted);line-height:1.6}
+.language-drawer-note{margin-top:20px;padding-top:16px;font-size:11px;color:var(--muted);line-height:1.6}
 body.language-drawer-open{overflow:hidden}
 @media(max-width:620px){
  .language-drawer-panel{width:min(340px,100%);padding:20px 16px 18px}
