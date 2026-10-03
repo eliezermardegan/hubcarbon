@@ -1,10 +1,35 @@
 const menuButton=document.querySelector('.menu-toggle');
 const nav=document.querySelector('#site-nav');
 if(menuButton && nav){
+  const lang=(document.documentElement.lang||'en').slice(0,2);
+  const labels={
+    en:{menu:'Menu',hubs:'Hubs',ecosystem:'Ecosystem',infrastructure:'Infrastructure',about:'About',talk:'Talk to us',close:'Close menu'},
+    pt:{menu:'Menu',hubs:'Hubs',ecosystem:'Ecossistema',infrastructure:'Infraestrutura',about:'Sobre',talk:'Fale connosco',close:'Fechar menu'},
+    es:{menu:'Menú',hubs:'Hubs',ecosystem:'Ecosistema',infrastructure:'Infraestructura',about:'Sobre nosotros',talk:'Hable con nosotros',close:'Cerrar menú'},
+    fr:{menu:'Menu',hubs:'Hubs',ecosystem:'Écosystème',infrastructure:'Infrastructure',about:'À propos',talk:'Parlons-nous',close:'Fermer le menu'}
+  }[lang] || {menu:'Menu',hubs:'Hubs',ecosystem:'Ecosystem',infrastructure:'Infrastructure',about:'About',talk:'Talk to us',close:'Close menu'};
+  menuButton.textContent=labels.menu;
+  const links=nav.querySelectorAll('a');
+  if(links[0])links[0].textContent=labels.hubs;
+  if(links[1])links[1].textContent=labels.ecosystem;
+  if(links[2])links[2].textContent=labels.infrastructure;
+  if(links[3])links[3].textContent=labels.about;
+  if(links[4])links[4].textContent=labels.talk;
+  if(!nav.querySelector('.menu-drawer-head')){
+    const head=document.createElement('div');
+    head.className='menu-drawer-head';
+    head.innerHTML='<span class="menu-drawer-kicker">'+labels.menu.toUpperCase()+'</span><button type="button" class="menu-drawer-close" aria-label="'+labels.close+'">×</button>';
+    nav.prepend(head);
+    head.querySelector('.menu-drawer-close').addEventListener('click',()=>{
+      nav.classList.remove('open');
+      menuButton.setAttribute('aria-expanded','false');
+    });
+  }
   menuButton.addEventListener('click',()=>{
     const open=nav.classList.toggle('open');
     menuButton.setAttribute('aria-expanded',String(open));
-    const ml={en:{o:'Close',c:'Menu'},pt:{o:'Fechar',c:'Menu'},es:{o:'Cerrar',c:'Menú'},fr:{o:'Fermer',c:'Menu'}};const l=(document.documentElement.lang||'en').slice(0,2);menuButton.textContent=open?(ml[l]?.o||'Close'):(ml[l]?.c||'Menu');
+    menuButton.textContent=labels.menu;
+    document.body.classList.toggle('menu-open',open);
   });
 }
 
@@ -14,7 +39,7 @@ const observer=new IntersectionObserver(entries=>{
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener('click',()=>{
-    if(nav){nav.classList.remove('open');if(menuButton){menuButton.textContent='Menu';menuButton.setAttribute('aria-expanded','false');}}
+    if(nav){nav.classList.remove('open');document.body.classList.remove('menu-open');if(menuButton){menuButton.setAttribute('aria-expanded','false');}}
   });
 });
 
