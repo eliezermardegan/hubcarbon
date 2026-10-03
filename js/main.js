@@ -1,10 +1,23 @@
 const menuButton=document.querySelector('.menu-toggle');
 const nav=document.querySelector('#site-nav');
 if(menuButton && nav){
+  const lang=(document.documentElement.lang||'en').slice(0,2);
+  const title=(lang==='es'?'Menú':'Menu');
+  menuButton.textContent=title;
+  if(!nav.querySelector('.menu-drawer-head')){
+    const head=document.createElement('div');
+    head.className='menu-drawer-head';
+    head.innerHTML='<span class="menu-drawer-kicker">'+title.toUpperCase()+'</span><button type="button" class="menu-drawer-close" aria-label="Close menu">×</button>';
+    nav.prepend(head);
+    head.querySelector('.menu-drawer-close').addEventListener('click',()=>{
+      nav.classList.remove('open');
+      menuButton.setAttribute('aria-expanded','false');
+    });
+  }
   menuButton.addEventListener('click',()=>{
     const open=nav.classList.toggle('open');
     menuButton.setAttribute('aria-expanded',String(open));
-    const ml={en:{o:'Close',c:'Menu'},pt:{o:'Fechar',c:'Menu'},es:{o:'Cerrar',c:'Menú'},fr:{o:'Fermer',c:'Menu'}};const l=(document.documentElement.lang||'en').slice(0,2);menuButton.textContent=open?(ml[l]?.o||'Close'):(ml[l]?.c||'Menu');
+    menuButton.textContent=title;
   });
 }
 
@@ -14,7 +27,7 @@ const observer=new IntersectionObserver(entries=>{
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener('click',()=>{
-    if(nav){nav.classList.remove('open');if(menuButton){menuButton.textContent='Menu';menuButton.setAttribute('aria-expanded','false');}}
+    if(nav){nav.classList.remove('open');if(menuButton){menuButton.setAttribute('aria-expanded','false');}}
   });
 });
 
