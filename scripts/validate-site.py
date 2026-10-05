@@ -39,7 +39,7 @@ for path in pages:
     for hreflang in ("en", "pt", "es", "fr", "x-default"):
         if f'hreflang="{hreflang}"' not in text:
             fail(rel, f"missing hreflang={hreflang}")
-    if "/favicon.png" not in text and "/favicon.ico" not in text:
+    if "/favicon.png" not in text and "/favicon.ico" not in text and "/favicon.svg" not in text:
         fail(rel, "missing favicon reference")
 
 # Ensure each localized page has a matching page in all four languages.
