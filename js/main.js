@@ -202,3 +202,11 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   });
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',applyEnglishFooter); else applyEnglishFooter();
 })();
+
+/* Carry the platform enquiry intent into the existing contact form. */
+(function(){
+  const topic = document.querySelector('#contact-form select[name="topic"]');
+  if (topic && new URLSearchParams(window.location.search).get('topic') === 'platform') {
+    topic.value = 'Hub Carbon Platform';
+  }
+})();

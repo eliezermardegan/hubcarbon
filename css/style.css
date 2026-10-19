@@ -199,3 +199,15 @@ body.language-drawer-open{overflow:hidden}
 .capability-next{margin-top:38px!important;font-size:14px!important}
 .capability-next a{color:var(--green);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:620px){.capability-grid{grid-template-columns:1fr}.capability-grid article{min-height:0}}
+
+/* Platform pre-launch announcement: restrained, readable and visible without JS. */
+.platform-preview .infra-card h3{margin-top:24px;font-size:24px;line-height:1.2}
+.platform-assurance{margin-top:28px;padding:28px;border:1px solid #c7d4ca;border-left:4px solid var(--green);border-radius:14px;background:#fff}
+.platform-assurance h3{margin:0 0 12px;font-size:24px;line-height:1.25;letter-spacing:-.03em}
+.platform-assurance p{max-width:940px;margin:0;color:#4c5952;font-size:15px;line-height:1.7}
+.platform-assurance .platform-standards{margin-top:16px;font-size:13px}
+.platform-next{display:flex;align-items:center;gap:28px;margin-top:26px}
+.platform-note{max-width:650px;margin:0;color:#4c5952;font-size:13px;line-height:1.6}
+.platform-next .button{flex-shrink:0;text-align:center}
+@media(max-width:900px){.platform-preview .infra-grid{grid-template-columns:1fr}.platform-next{align-items:flex-start;flex-direction:column;gap:16px}}
+@media(max-width:620px){.platform-assurance{padding:22px}.platform-preview h2{font-size:38px}}
