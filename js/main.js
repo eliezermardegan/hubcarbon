@@ -1,54 +1,84 @@
-const menuButton=document.querySelector('.menu-toggle');
-const nav=document.querySelector('#site-nav');
-if(menuButton && nav){
-  const lang=(document.documentElement.lang||'en').slice(0,2);
-  const labels={
-    en:{menu:'Menu',hubs:'Hubs',ecosystem:'Ecosystem',infrastructure:'Infrastructure',about:'About',talk:'Talk to us',close:'Close menu'},
-    pt:{menu:'Menu',hubs:'Hubs',ecosystem:'Ecossistema',infrastructure:'Infraestrutura',about:'Sobre',talk:'Fale connosco',close:'Fechar menu'},
-    es:{menu:'Menú',hubs:'Hubs',ecosystem:'Ecosistema',infrastructure:'Infraestructura',about:'Sobre nosotros',talk:'Hable con nosotros',close:'Cerrar menú'},
-    fr:{menu:'Menu',hubs:'Hubs',ecosystem:'Écosystème',infrastructure:'Infrastructure',about:'À propos',talk:'Parlons-nous',close:'Fermer le menu'}
-  }[lang] || {menu:'Menu',hubs:'Hubs',ecosystem:'Ecosystem',infrastructure:'Infrastructure',about:'About',talk:'Talk to us',close:'Close menu'};
-  menuButton.textContent=labels.menu;
-
-  const links=nav.querySelectorAll('a');
-  const drawer=document.createElement('div');
-  drawer.className='menu-mobile-drawer';
-  drawer.hidden=true;
-  drawer.innerHTML='<div class="menu-mobile-panel" role="dialog" aria-modal="true" aria-label="'+labels.menu+'"><div class="menu-mobile-head"><div class="menu-mobile-kicker">'+labels.menu.toUpperCase()+'</div><button type="button" class="menu-mobile-close" aria-label="'+labels.close+'">×</button></div><div class="menu-mobile-options"></div></div>';
-  document.body.appendChild(drawer);
-
-  const options=drawer.querySelector('.menu-mobile-options');
-  links.forEach(link=>{
-    const a=document.createElement('a');
-    a.className='menu-mobile-option'+(link.classList.contains('nav-button')?' nav-button':'');
-    a.href=link.getAttribute('href')||'#';
-    const key=link.classList.contains('nav-button')?'talk':
-      (link.getAttribute('href')||'').includes('#hubs')?'hubs':
-      (link.getAttribute('href')||'').includes('#ecosystem')?'ecosystem':
-      (link.getAttribute('href')||'').includes('#infrastructure')?'infrastructure':'about';
-    a.textContent=labels[key];
-    options.appendChild(a);
-    a.addEventListener('click',()=>closeDrawer());
+/* Accessible navigation uses the same labels and links on every screen. */
+(function () {
+  const button = document.querySelector('.menu-toggle');
+  const nav = document.querySelector('#site-nav');
+  if (!button || !nav) return;
+  document.documentElement.classList.add('nav-ready');
+  const close = (restoreFocus = false) => {
+    nav.classList.remove('is-open');
+    button.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) button.focus();
+  };
+  button.addEventListener('click', () => {
+    const open = button.getAttribute('aria-expanded') !== 'true';
+    nav.classList.toggle('is-open', open);
+    button.setAttribute('aria-expanded', String(open));
   });
+  nav.addEventListener('click', e => { if (e.target.closest('a')) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('is-open')) close(true); });
+  document.addEventListener('click', e => { if (!nav.contains(e.target) && !button.contains(e.target)) close(); });
+  const breakpoint = window.matchMedia('(min-width: 1101px)');
+  breakpoint.addEventListener('change', () => close());
+})();
 
-  const closeButton=drawer.querySelector('.menu-mobile-close');
-  const openDrawer=()=>{drawer.hidden=false;document.body.classList.add('menu-open');menuButton.setAttribute('aria-expanded','true');};
-  const closeDrawer=()=>{drawer.hidden=true;document.body.classList.remove('menu-open');menuButton.setAttribute('aria-expanded','false');};
-  menuButton.addEventListener('click',()=>{drawer.hidden?openDrawer():closeDrawer();});
-  closeButton.addEventListener('click',closeDrawer);
-  drawer.addEventListener('click',e=>{if(e.target===drawer)closeDrawer();});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!drawer.hidden)closeDrawer();});
+/* No tracker, cookies, storage or network calls: disabled integration hook.
+   A future provider must be configured only after its privacy/consent review. */
+function hubCarbonMetric(event, fields = {}) {
+  if (typeof window.hubCarbonMetrics !== 'function') return;
+  const lang = (document.documentElement.lang || 'en').slice(0, 2);
+  try { window.hubCarbonMetrics({event, lang, ...fields}); } catch (_) { /* Measurement must not interrupt the visitor. */ }
 }
-
-const observer=new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{ if(entry.isIntersecting) entry.target.classList.add('visible'); });
-},{threshold:.12});
-document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click',()=>{
-    if(nav){nav.classList.remove('open');}if(menuButton){menuButton.setAttribute('aria-expanded','false');}document.body.classList.remove('menu-open');
-  });
+document.addEventListener('click', e => {
+  const link = e.target.closest('[data-cta]');
+  if (link) hubCarbonMetric('cta_click', {cta: link.dataset.cta});
 });
+
+/* Existing Formspree endpoint; progressive enhancement over native POST. */
+(function () {
+  const form = document.querySelector('#contact-form');
+  if (!form) return;
+  const language = (document.documentElement.lang || 'en').slice(0, 2);
+  const text = {
+    en: {sending:'Sending…', success:'Your enquiry has been sent. Thank you. We will contact you to discuss next steps.', error:'We could not confirm delivery. Your information is still here. Please try again or email info@hubcarbon.com.'},
+    pt: {sending:'Enviando…', success:'Seu contato foi enviado. Obrigado. Entraremos em contato para conversar sobre os próximos passos.', error:'Não foi possível confirmar o envio. Suas informações foram preservadas. Tente novamente ou escreva para info@hubcarbon.com.'},
+    es: {sending:'Enviando…', success:'Su consulta se ha enviado. Gracias. Contactaremos con usted para hablar de los próximos pasos.', error:'No pudimos confirmar el envío. Sus datos se han conservado. Inténtelo de nuevo o escriba a info@hubcarbon.com.'},
+    fr: {sending:'Envoi en cours…', success:'Votre demande a été envoyée. Merci. Nous vous contacterons pour discuter de la suite.', error:'Nous n’avons pas pu confirmer l’envoi. Vos informations sont conservées. Réessayez ou écrivez à info@hubcarbon.com.'}
+  }[language];
+  const messages = text || {sending:'Sending…', success:'Your enquiry has been sent.', error:'Please try again or email info@hubcarbon.com.'};
+  const topic = form.elements.namedItem('topic');
+  const allowed = ['intelligence','decarbonisation','projects','markets','finance','partnership','other'];
+  const selected = new URLSearchParams(window.location.search).get('topic');
+  if (allowed.includes(selected)) topic.value = selected;
+  let started = false;
+  form.addEventListener('input', () => { if (!started) { started = true; hubCarbonMetric('form_start'); } });
+  if (!window.fetch || !window.FormData || !window.AbortController) return;
+  const button = form.querySelector('[type="submit"]');
+  const status = form.querySelector('#form-status');
+  let sending = false;
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (sending || !form.reportValidity()) return;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+    const label = button.textContent;
+    sending = true; button.disabled = true; button.textContent = messages.sending;
+    form.setAttribute('aria-busy', 'true'); status.textContent = messages.sending;
+    try {
+      const response = await fetch(form.action, {method:'POST', body:new FormData(form), headers:{Accept:'application/json'}, signal:controller.signal});
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result || (result.errors && result.errors.length)) throw new Error('Unconfirmed enquiry');
+      status.textContent = messages.success; status.className = 'form-status is-success';
+      hubCarbonMetric('form_success', {topic: allowed.includes(topic.value) ? topic.value : 'other'});
+      form.reset(); started = false;
+    } catch (_) {
+      status.textContent = messages.error; status.className = 'form-status is-error';
+      hubCarbonMetric('form_error');
+    } finally {
+      clearTimeout(timeout); sending = false; button.disabled = false; button.textContent = label;
+      form.removeAttribute('aria-busy'); status.focus();
+    }
+  });
+})();
 
 /* Hub Carbon privacy-first cookie notice.
    The current site uses only essential storage for remembering this choice.
@@ -64,13 +94,25 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   const saveConsent=(value)=>{
     try{localStorage.setItem(CONSENT_KEY,JSON.stringify({essential:true,analytics:false,updatedAt:new Date().toISOString(),choice:value}));}catch(e){}
   };
+  let settingsTrigger = null;
+  let backgroundState = [];
   const openSettings=()=>{
+    settingsTrigger = document.activeElement;
     const modal=document.querySelector('#cookie-settings');
-    if(modal){modal.hidden=false;document.body.classList.add('cookie-modal-open');modal.querySelector('.cookie-close')?.focus();}
+    if(modal){
+      backgroundState = [...document.body.children].filter(el => el !== modal && !['SCRIPT','STYLE'].includes(el.tagName)).map(el => [el, el.inert]);
+      backgroundState.forEach(([el]) => { el.inert = true; });
+      modal.hidden=false;document.body.classList.add('cookie-modal-open');modal.querySelector('.cookie-close')?.focus();
+    }
   };
   const closeSettings=()=>{
     const modal=document.querySelector('#cookie-settings');
-    if(modal){modal.hidden=true;document.body.classList.remove('cookie-modal-open');}
+    if(modal){modal.hidden=true;document.body.classList.remove('cookie-modal-open');
+      backgroundState.forEach(([el, wasInert]) => { el.inert = wasInert; });
+      backgroundState = [];
+      if(settingsTrigger?.isConnected && !settingsTrigger.closest('[hidden]')) settingsTrigger.focus();
+      else document.querySelector('footer [data-cookie-settings]')?.focus();
+    }
   };
   const hideBanner=()=>{
     const banner=document.querySelector('#cookie-banner');
@@ -86,76 +128,20 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     document.querySelectorAll('[data-cookie-essential]').forEach(btn=>btn.addEventListener('click',acceptEssential));
     settings?.querySelector('.cookie-close')?.addEventListener('click',closeSettings);
     settings?.addEventListener('click',e=>{if(e.target===settings) closeSettings();});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape' && settings && !settings.hidden) closeSettings();});
+    document.addEventListener('keydown', e => {
+      if (!settings || settings.hidden) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeSettings(); }
+      if (e.key !== 'Tab') return;
+      const controls = [...settings.querySelectorAll('button, a[href], input, select, textarea, [tabindex="0"]')].filter(el => !el.disabled && !el.hidden);
+      const first = controls[0], last = controls[controls.length - 1];
+      if (!first) return;
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
   };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 })();
 
-
-/* Global multilingual language selector */
-(function(){
-  const rootLang=(document.documentElement.lang||'en').slice(0,2);
-  const path=window.location.pathname;
-  const languages=[
-    {code:'en',name:'English'},
-    {code:'es',name:'Español'},
-    {code:'fr',name:'Français'},
-    {code:'pt',name:'Português'}
-  ];
-  const ui={
-    en:{kicker:'LANGUAGE',title:'Select your language',search:'Type a language',note:'Choose the language you prefer for this site.'},
-    es:{kicker:'IDIOMA',title:'Selecciona tu idioma',search:'Buscar idioma',note:'Elige el idioma que prefieras para este sitio.'},
-    fr:{kicker:'LANGUE',title:'Choisissez votre langue',search:'Rechercher une langue',note:'Choisissez la langue que vous préférez pour ce site.'},
-    pt:{kicker:'IDIOMA',title:'Selecione o seu idioma',search:'Pesquisar idioma',note:'Escolha o idioma que prefere para este site.'}
-  }[rootLang]||null;
-  if(!ui)return;
-
-  let box=document.querySelector('.language-switcher');
-  if(!box){
-    const nav=document.querySelector('.site-header .nav');
-    const siteNav=document.querySelector('#site-nav');
-    if(nav){box=document.createElement('div');box.className='language-switcher';box.setAttribute('aria-label',ui.title);if(siteNav)siteNav.insertAdjacentElement('afterend',box);else nav.appendChild(box);}
-  }
-  if(!box)return;
-  box.setAttribute('role','button');
-  box.setAttribute('tabindex','0');
-  box.setAttribute('aria-haspopup','dialog');
-  box.setAttribute('aria-expanded','false');
-  box.innerHTML='<span class="language-label">'+ui.kicker+'</span><span class="language-current">'+rootLang.toUpperCase()+'</span>';
-
-  let drawer=document.querySelector('#language-drawer');
-  if(!drawer){
-    drawer=document.createElement('div');
-    drawer.id='language-drawer';
-    drawer.className='language-drawer';
-    drawer.hidden=true;
-    drawer.innerHTML='<div class="language-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="language-drawer-title"><div class="language-drawer-head"><div><div class="language-drawer-kicker">'+ui.kicker+'</div><h2 class="language-drawer-title" id="language-drawer-title">'+ui.title+'</h2></div><button type="button" class="language-drawer-close" aria-label="Close">×</button></div><div class="language-drawer-search"><input type="search" aria-label="'+ui.search+'" placeholder="'+ui.search+'"></div><div class="language-options"></div><p class="language-drawer-note">'+ui.note+'</p></div>';
-    document.body.appendChild(drawer);
-  }
-
-  const options=drawer.querySelector('.language-options');
-  const input=drawer.querySelector('input');
-  const close=drawer.querySelector('.language-drawer-close');
-  const urlFor=(code)=>{
-    const normalized=path.replace(/\/+$/,'')||'/';
-    const pageMatch=normalized.match(/\/(?:pt|es|fr)\/pages\/([^/]+)$/) || normalized.match(/\/pages\/([^/]+)$/);
-    if(pageMatch)return code==='en'?'/pages/'+pageMatch[1]:'/'+code+'/pages/'+pageMatch[1];
-    return code==='en'?'/':'/'+code+'/';
-  };
-  const render=(filter='')=>{
-    const q=filter.trim().toLowerCase();
-    options.innerHTML=languages.filter(l=>!q || l.name.toLowerCase().includes(q) || l.code.includes(q) || l.name.toLowerCase().includes(q)).map(l=>'<button type="button" class="language-option '+(l.code===rootLang?'is-current':'')+'" data-language="'+l.code+'"><span><strong>'+l.name+'</strong></span><span class="language-check" aria-hidden="true">✓</span></button>').join('');
-    options.querySelectorAll('[data-language]').forEach(btn=>btn.addEventListener('click',()=>{const code=btn.dataset.language;if(code!==rootLang)window.location.href=urlFor(code);else closeDrawer();}));
-  };
-  const openDrawer=()=>{drawer.hidden=false;document.body.classList.add('language-drawer-open');box.setAttribute('aria-expanded','true');render();requestAnimationFrame(()=>input?.focus());};
-  const closeDrawer=()=>{drawer.hidden=true;document.body.classList.remove('language-drawer-open');box.setAttribute('aria-expanded','false');};
-  box.addEventListener('click',openDrawer);
-  box.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openDrawer();}});
-  close?.addEventListener('click',closeDrawer);
-  drawer.addEventListener('click',e=>{if(e.target===drawer)closeDrawer();});
-  input?.addEventListener('input',()=>render(input.value));
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!drawer.hidden)closeDrawer();});
-})();
 
 /* Multilingual footer and cookie text safeguard */
 (function(){
